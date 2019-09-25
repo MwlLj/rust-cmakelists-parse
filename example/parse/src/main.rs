@@ -14,6 +14,9 @@ impl IKv for CKv {
     fn ch(&mut self, c: u8) {
         self.content.push(c);
     }
+
+    fn double_quotes_end(&mut self) {
+    }
 }
 
 fn parseTest() {
@@ -45,9 +48,13 @@ impl ICall for CCall {
     }
 
     fn on_kv(&mut self, key: &str, value: &str) {
+        println!("key: {}, value: {}", key, value);
     }
 
     fn on_ch(&mut self, c: char) {
+    }
+
+    fn on_double_quotes_end(&mut self) {
     }
 }
 

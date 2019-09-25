@@ -17,6 +17,7 @@ enum CharMode {
 pub trait IKv {
     fn kv(&mut self, key: &[u8], value: &[u8]);
     fn ch(&mut self, c: u8);
+    fn double_quotes_end(&mut self) {}
 }
 
 pub struct CParser {
@@ -78,6 +79,7 @@ impl CParser {
                 },
                 CharMode::DoubleQuotes => {
                     if c == b'"' {
+                        t.double_quotes_end();
                         charMode = CharMode::Normal;
                         t.kv(key.as_slice(), word.as_slice());
                         // println!("valueFn({}, {})", &key, &word);

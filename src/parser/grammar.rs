@@ -50,6 +50,10 @@ impl<'a, F: ICall> IKv for CKv<'a, F> {
     fn ch(&mut self, c: u8) {
         self.f.on_ch(c as char);
     }
+
+    fn double_quotes_end(&mut self) {
+        self.f.on_double_quotes_end();
+    }
 }
 
 impl<'a, F> CKv<'a, F> {
@@ -67,6 +71,7 @@ pub trait ICall {
     fn on_end_if(&mut self);
     fn on_kv(&mut self, key: &str, value: &str);
     fn on_ch(&mut self, c: char);
+    fn on_double_quotes_end(&mut self) {}
 }
 
 pub struct CGrammar {
