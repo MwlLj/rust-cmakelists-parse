@@ -17,6 +17,9 @@ impl IKv for CKv {
 
     fn double_quotes_end(&mut self) {
     }
+
+    fn back_quote_end(&mut self) {
+    }
 }
 
 fn parseTest() {
@@ -55,6 +58,9 @@ impl ICall for CCall {
     }
 
     fn on_double_quotes_end(&mut self) {
+    }
+
+    fn on_back_quote_end(&mut self) {
     }
 }
 

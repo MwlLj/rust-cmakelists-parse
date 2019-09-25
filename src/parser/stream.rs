@@ -10,6 +10,8 @@ enum CharMode {
     Normal,
     // ""
     DoubleQuotes,
+    // `
+    BackQuote,
     // #
     HashTag
 }
@@ -18,6 +20,7 @@ pub trait IKv {
     fn kv(&mut self, key: &[u8], value: &[u8]);
     fn ch(&mut self, c: u8);
     fn double_quotes_end(&mut self) {}
+    fn back_quote_end(&mut self) {}
 }
 
 pub struct CParser {
@@ -42,7 +45,15 @@ impl CParser {
             match charMode {
                 CharMode::Normal => {
                     if c == b'"' {
-                        charMode = CharMode::DoubleQuotes;
+                        match charMode {
+                            CharMode::BackQuote => {
+                            },
+                            _ => {
+                                charMode = CharMode::DoubleQuotes;
+                            }
+                        }
+                    } else if c == b'`' {
+                        charMode = CharMode::BackQuote;
                     } else if c == b'#' {
                         charMode = CharMode::HashTag;
                     } else if c == b' ' || c == b'\t' || c == b'\r' || c == b'\n' || c == b'(' {
@@ -83,6 +94,16 @@ impl CParser {
                         charMode = CharMode::Normal;
                         t.kv(key.as_slice(), word.as_slice());
                         // println!("valueFn({}, {})", &key, &word);
+                        word.clear();
+                    } else {
+                        word.push(c);
+                    }
+                },
+                CharMode::BackQuote => {
+                    if c == b'`' {
+                        t.back_quote_end();
+                        charMode = CharMode::Normal;
+                        t.kv(key.as_slice(), word.as_slice());
                         word.clear();
                     } else {
                         word.push(c);
