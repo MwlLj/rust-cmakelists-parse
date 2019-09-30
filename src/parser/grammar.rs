@@ -58,6 +58,16 @@ impl<'a, F: ICall> IKv for CKv<'a, F> {
     fn back_quote_end(&mut self) {
         self.f.on_back_quote_end();
     }
+
+    fn k_end(&mut self, key: &[u8]) {
+        let k = match String::from_utf8(key.to_vec()) {
+            Ok(k) => k,
+            Err(err) => {
+                return;
+            }
+        };
+        self.f.on_k_end(&k);
+    }
 }
 
 impl<'a, F> CKv<'a, F> {
@@ -74,6 +84,7 @@ pub trait ICall {
     fn on_else(&mut self);
     fn on_end_if(&mut self);
     fn on_kv(&mut self, key: &str, value: &str);
+    fn on_k_end(&mut self, key: &str) {}
     fn on_ch(&mut self, c: char);
     fn on_double_quotes_end(&mut self) {}
     fn on_back_quote_end(&mut self) {}

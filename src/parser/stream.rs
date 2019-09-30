@@ -18,6 +18,7 @@ enum CharMode {
 
 pub trait IKv {
     fn kv(&mut self, key: &[u8], value: &[u8]);
+    fn k_end(&mut self, key: &[u8]) {}
     fn ch(&mut self, c: u8);
     fn double_quotes_end(&mut self) {}
     fn back_quote_end(&mut self) {}
@@ -80,6 +81,7 @@ impl CParser {
                     } else if c == b')' {
                         // if word.len() > 0 {
                         t.kv(key.as_slice(), word.as_slice());
+                        t.k_end(key.as_slice());
                         // println!("valueFn({}, {})", &key, &word);
                         // }
                         wordMode = WordMode::Key;
