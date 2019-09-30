@@ -75,12 +75,12 @@ impl CParser {
                             }
                         }
                         if c == b'(' {
+                            t.kv(key.as_slice(), vec!().as_slice());
                             wordMode = WordMode::Value;
                         }
                         word.clear();
                     } else if c == b')' {
                         // if word.len() > 0 {
-                        t.kv(key.as_slice(), word.as_slice());
                         t.k_end(key.as_slice());
                         // println!("valueFn({}, {})", &key, &word);
                         // }
