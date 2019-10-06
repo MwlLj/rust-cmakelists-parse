@@ -1,0 +1,136 @@
+INCLUDE_DIRECTORIES(
+	${HEADER_DIR}
+	${THIRD_HEADER_DIR}
+	${HEADER_DIR}/cbb11commonlogic
+	${HEADER_DIR}/cbb11commonlogic/sql
+	${HEADER_DIR}/cbb12commu
+	${HEADER_DIR}/framework
+	${HEADER_DIR}/cbb38svrapi/
+	${HEADER_DIR}/cbb38svrapi/dahapi
+	${HEADER_DIR}/framework/jsonconverter
+	${HEADER_DIR}/cbb95logicdata/iotas_baseconfig
+	${THIRD_HEADER_DIR}/hk
+	${THIRD_HEADER_DIR}/hk/net
+	include/
+	${PROJECT_SOURCE_DIR}/03implement/svr16iotas_acd
+)
+
+LINK_DIRECTORIES (
+	${LINK_LIBRARIES_DIR}
+)
+
+SET(TARGET_NAME iotas_acd_hk${FILE_PREFIX})
+
+SET(TARGET_INSTALL_DIR "${INSTALL_BIN_DIR}/service/iotas_acd_hk")
+
+AUX_SOURCE_DIRECTORY (source/ SOURCE_LIST)
+
+FILE(GLOB HEADER_LIST "include/*.h")
+
+SET(LIBRARIES_NAME
+	iotas_acd_client
+	iotas_acd_client_db
+	dahapi_iac
+	dahapi
+	mq_sender
+	iotas_baseconfig
+	aw_client
+	configtool
+	curlclient
+	charsetconv
+	sql
+	log
+	ospathtool
+	logictool
+	stringtool
+	timetool
+)
+
+INCLUDE (${CMAKE_PREFIX_PATH}/09compile/GenerateLinkLibraries.cmake)
+
+ADD_EXECUTABLE(${TARGET_NAME} ${SOURCE_LIST} ${HEADER_LIST})
+
+SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES DEBUG_POSTFIX "_d")
+
+IF (${OS} STREQUAL "WINDOWS")
+		TARGET_LINK_LIBRARIES(${TARGET_NAME}
+						${DEBUG_LINK_LIBRARIES}
+						${RELEASE_LINK_LIBRARIES}
+						awnet_client${FILE_PREFIX}
+						debug minizip${FILE_PREFIX}_d optimized minizip${FILE_PREFIX}
+						libevent libevent_core libevent_extras
+						libevent_openssl
+						libcrypto libssl libeay32 ssleay32
+						debug jsonconverter_d optimized jsonconverter
+						debug jsoncpp_d optimized jsoncpp
+						debug log4cplusUD optimized log4cplusU
+						debug libcurl-d_imp optimized libcurl_imp
+						debug mimetic64_d optimized mimetic64
+						sqlite3
+						HCNetSDK
+						ws2_32
+		)
+		#install可执行文件
+		INSTALL (TARGETS ${TARGET_NAME} RUNTIME CONFIGURATIONS Release DESTINATION ${TARGET_INSTALL_DIR})
+		#install海康动态库
+		INSTALL (DIRECTORY "${INSTALL_BIN_DIR}/third_dll/hk/net/" DESTINATION ${TARGET_INSTALL_DIR})
+		#install 其他第三方库整个目录下的文件
+		INSTALL (DIRECTORY "${INSTALL_BIN_DIR}/third_dll/openssl/" DESTINATION ${TARGET_INSTALL_DIR})
+		INSTALL (DIRECTORY "${INSTALL_BIN_DIR}/third_dll/pthread/" DESTINATION ${TARGET_INSTALL_DIR})
+		#install 其他第三方库目录下的某个文件
+		INSTALL (FILES "${INSTALL_BIN_DIR}/third_dll/anywhere_net/anywhere_net64.dll" DESTINATION ${TARGET_INSTALL_DIR})
+		INSTALL (FILES "${INSTALL_BIN_DIR}/third_dll/curl/libcurl.dll" DESTINATION ${TARGET_INSTALL_DIR})
+		INSTALL (FILES "${INSTALL_BIN_DIR}/third_dll/mosquitto/mosquitto.dll" DESTINATION ${TARGET_INSTALL_DIR})
+		INSTALL (FILES "${INSTALL_BIN_DIR}/third_dll/mosquitto_broker/broker.dll" DESTINATION ${TARGET_INSTALL_DIR})
+ELSEIF (${OS} STREQUAL "LINUX")
+		TARGET_LINK_LIBRARIES(${TARGET_NAME}
+						${DEBUG_LINK_LIBRARIES}
+						${RELEASE_LINK_LIBRARIES}
+						`git_lib { name = awnet_client, version = 0.2.1, platform = ${FILE_PREFIX}, extra_type = json, extra = 
+{
+	"name": "jake",
+	"objs": ["1", "2", "3"]
+}
+}`
+						'git_lib { name = awnet_client, version = 0.2.1, platform = ${FILE_PREFIX}, extra_type = json, extra = 
+{
+	"name": "jake",
+	"objs": ["1", "2", "3"]
+}
+}'
+						awnet_common${FILE_PREFIX}
+						awnet_protocol${FILE_PREFIX}
+						mosq_connection${FILE_PREFIX}
+						minizip${FILE_PREFIX}
+						jsonconverter
+						http_server
+						mosquitto
+						rabbitmq
+						debug mimetic_d optimized mimetic
+						curl7.55.1
+						jsoncpp
+						log4cplus
+						uuid
+						sqlite3
+						event event_core event_extra event_openssl
+						ssl1.1.0f
+						crypto1.1.0f
+						hcnetsdk
+						dl
+						hcnetsdk
+						z
+						rt
+		)
+
+		IF (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+				ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME} POST_BUILD	COMMAND echo "strip"
+							COMMAND ${STRIP} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${TARGET_NAME}
+							COMMAND mkdir -p ~/nfs/iotas/service/iotas_acd_hk
+							COMMAND cp -f ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${TARGET_NAME} ~/nfs/iotas/service/iotas_acd_hk
+							COMMAND cp -Rf ${INSTALL_BIN_DIR}/third_dll/hk/net/* ~/nfs/iotas/service/iotas_acd_hk
+							COMMAND mkdir -p ${TARGET_INSTALL_DIR}
+							COMMAND cp -f ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${TARGET_NAME} ${TARGET_INSTALL_DIR}
+							COMMAND cp -Rf ${INSTALL_BIN_DIR}/third_dll/hk/net/* ${TARGET_INSTALL_DIR}
+			)
+		ENDIF()
+ENDIF()
