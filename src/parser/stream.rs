@@ -40,6 +40,7 @@ impl CParser {
         let mut wordMode = WordMode::Key;
         let mut word = Vec::new();
         let mut key = Vec::new();
+        let mut blockChar: u8 = b'"';
         let chars = content.as_slice();
         for c in chars {
             let c = *c;
@@ -53,8 +54,9 @@ impl CParser {
                                 charMode = CharMode::DoubleQuotes;
                             }
                         }
-                    } else if c == b'`' {
+                    } else if c == b'`' || c == b'"' || c == b'\'' {
                         charMode = CharMode::BackQuote;
+                        blockChar = c;
                     } else if c == b'#' {
                         charMode = CharMode::HashTag;
                     } else if c == b' ' || c == b'\t' || c == b'\r' || c == b'\n' || c == b'(' {
@@ -102,7 +104,7 @@ impl CParser {
                     }
                 },
                 CharMode::BackQuote => {
-                    if c == b'`' {
+                    if c == blockChar {
                         t.back_quote_end();
                         charMode = CharMode::Normal;
                         t.kv(key.as_slice(), word.as_slice());
