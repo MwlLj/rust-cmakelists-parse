@@ -36,6 +36,10 @@ impl CParser {
                 return Err("read file error");
             }
         };
+        self.parse_from_string(&content, t)
+    }
+
+    pub fn parse_from_string<T: IKv>(&self, content: &Vec<u8>, t: &mut T) -> Result<(), &str> {
         let mut charMode = CharMode::Normal;
         let mut wordMode = WordMode::Key;
         let mut word = Vec::new();

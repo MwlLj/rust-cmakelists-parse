@@ -102,6 +102,14 @@ impl CGrammar {
         };
         Ok(())
     }
+
+    pub fn parse_from_string<F: ICall>(&self, content: &Vec<u8>, f: &mut F) -> Result<(), &str> {
+        let mut kv = CKv::new(f);
+        if let Err(err) = self.parser.parse_from_string(content, &mut kv) {
+            return Err(err);
+        };
+        Ok(())
+    }
 }
 
 impl CGrammar {
