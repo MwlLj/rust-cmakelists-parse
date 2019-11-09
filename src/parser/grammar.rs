@@ -51,6 +51,10 @@ impl<'a, F: ICall> IKv for CKv<'a, F> {
         self.f.on_ch(c as char);
     }
 
+    fn double_quotes_start(&mut self) {
+        self.f.on_double_quotes_start();
+    }
+
     fn double_quotes_end(&mut self) {
         self.f.on_double_quotes_end();
     }
@@ -86,6 +90,7 @@ pub trait ICall {
     fn on_kv(&mut self, key: &str, value: &str);
     fn on_k_end(&mut self, key: &str) {}
     fn on_ch(&mut self, c: char);
+    fn on_double_quotes_start(&mut self) {}
     fn on_double_quotes_end(&mut self) {}
     fn on_back_quote_end(&mut self) {}
 }

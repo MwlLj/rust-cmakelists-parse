@@ -20,6 +20,7 @@ pub trait IKv {
     fn kv(&mut self, key: &[u8], value: &[u8]);
     fn k_end(&mut self, key: &[u8]) {}
     fn ch(&mut self, c: u8);
+    fn double_quotes_start(&mut self) {}
     fn double_quotes_end(&mut self) {}
     fn back_quote_end(&mut self) {}
 }
@@ -58,6 +59,7 @@ impl CParser {
                                 charMode = CharMode::DoubleQuotes;
                             }
                         }
+                        t.double_quotes_start();
                     } else if c == b'`' || c == b'"' || c == b'\'' {
                         charMode = CharMode::BackQuote;
                         blockChar = c;

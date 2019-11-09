@@ -1,6 +1,6 @@
 [package]
 name = "cmakelists_parse"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["MwlLj <731025894@qq.com>"]
 edition = "2018"
 
