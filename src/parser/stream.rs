@@ -52,7 +52,7 @@ impl CParser {
             let c = *c;
             match charMode {
                 CharMode::Normal => {
-                    if c == c == b'"' || c == b'^' {
+                    if c == b'"' || c == b'^' {
                         match charMode {
                             CharMode::BackQuote => {
                             },
