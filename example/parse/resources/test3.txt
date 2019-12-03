@@ -1,7 +1,7 @@
 INCLUDE_DIRECTORIES(
-	${HEADER_DIR}
-	${THIRD_HEADER_DIR}
-	${HEADER_DIR}/cbb11commonlogic
+	^${HEADER_DIR}^
+	^${THIRD_HEADER_DIR}^
+	"${HEADER_DIR}/cbb11commonlogic"
 	${HEADER_DIR}/cbb11commonlogic/sql
 	${HEADER_DIR}/cbb12commu
 	${HEADER_DIR}/framework
